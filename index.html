@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -17,21 +14,20 @@
     }
 
     header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #e2ddd4;
-    padding: 20px 40px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    user-select: none;
-  }
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e2ddd4;
+      padding: 20px 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      user-select: none;
+    }
 
-  header img {
-    height: 70px;
-    width: auto;
-    object-fit: contain;
-  }
-
+    header img {
+      height: 70px;
+      width: auto;
+      object-fit: contain;
+    }
 
     .logo {
       display: flex;
@@ -163,7 +159,40 @@
         grid-template-columns: 1fr;
       }
     }
-    
+
+    /* ========= ДОБАВЛЕНО: стили виджета чата ========= */
+    .chat-fab { position: fixed; right: 20px; bottom: 20px; width: 64px; height: 64px; border-radius: 50%; border: none; cursor: pointer; background: #a69f91; color: #2f2e2a; box-shadow: 0 8px 20px rgba(166,159,145,.5); display: grid; place-items: center; transition: transform .2s, box-shadow .2s, background .2s; z-index: 1000; }
+    .chat-fab:hover { transform: translateY(-2px) scale(1.02); background: #8f897e; box-shadow: 0 12px 28px rgba(143,137,126,.6); }
+    .chat-fab svg { width: 28px; height: 28px; }
+
+    .chat-panel { position: fixed; right: 20px; bottom: 96px; width: 360px; max-width: calc(100vw - 40px); max-height: 70vh; display: none; flex-direction: column; background: #f4ede3; color: #3b2a26; border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,.15); overflow: hidden; z-index: 1000; }
+    .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #e2ddd4; border-bottom: 1px solid rgba(0,0,0,.05); }
+    .chat-title { font-weight: 700; font-size: 18px; }
+    .chat-controls { display: flex; gap: 8px; }
+    .chat-icon-btn { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 8px; }
+    .chat-icon-btn:hover { background: rgba(0,0,0,.06); }
+
+    .chat-body { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .message { max-width: 85%; border-radius: 16px; padding: 10px 12px; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+    .message.bot { background: #fff; align-self: flex-start; }
+    .message.user { background: #e9e4da; align-self: flex-end; }
+
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .chip { background: #fff; border: 1px solid rgba(0,0,0,.08); padding: 6px 10px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+    .chip:hover { background: #f7f4ee; }
+
+    .typing { display: inline-block; width: 1em; text-align: left; }
+    .typing span { display: inline-block; width: .2em; height: .2em; margin: 0 .05em; background: #9b9486; border-radius: 50%; animation: blink 1s infinite; }
+    .typing span:nth-child(2){ animation-delay: .2s; }
+    .typing span:nth-child(3){ animation-delay: .4s; }
+    @keyframes blink { 0%,80%,100%{ opacity:.2 } 40%{ opacity:1 } }
+
+    .chat-input-row { display: flex; align-items: center; gap: 8px; padding: 10px; background: #e2ddd4; border-top: 1px solid rgba(0,0,0,.05); }
+    .chat-input { flex: 1; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,.12); background: #fff; }
+    .send-btn { background: #a69f91; color: #2f2e2a; border: none; border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+    .send-btn:hover { background: #8f897e; }
+
+    @media (max-width: 480px){ .chat-panel{ right: 10px; left: 10px; width: auto; bottom: 90px; } }
   </style>
 </head>
 <body>
@@ -193,9 +222,9 @@
         transition: width 0.3s ease;
       "></span>
     </a>
-    
+
     <style>
-    
+
       a::after {
         content: '';
         position: absolute;
@@ -207,9 +236,9 @@
         transition: width 0.3s ease;
       }
     </style>
-    
-   
-    
+
+
+
     </nav>
   </header>
 
@@ -368,6 +397,131 @@
       currentList.classList.add('open');
     }
   }
+</script>
+
+<!-- ========= ДОБАВЛЕНО: разметка виджета чата ========= -->
+<button class="chat-fab" id="chatFab" aria-label="Открыть чат" title="Помощник по темам">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M4 5.5C4 4.12 5.12 3 6.5 3h11C18.88 3 20 4.12 20 5.5v7c0 1.38-1.12 2.5-2.5 2.5H9l-4 4v-4.5C4 13.62 4 5.5 4 5.5Z" stroke="#2f2e2a" stroke-width="1.5"/>
+    <circle cx="9" cy="8.5" r="1" fill="#2f2e2a"/>
+    <circle cx="12.5" cy="8.5" r="1" fill="#2f2e2a"/>
+    <circle cx="16" cy="8.5" r="1" fill="#2f2e2a"/>
+  </svg>
+</button>
+
+<aside class="chat-panel" id="chatPanel" aria-live="polite" aria-label="Чат помощника">
+  <div class="chat-header">
+    <div class="chat-title">Помощник по темам</div>
+    <div class="chat-controls">
+      <button class="chat-icon-btn" id="minimizeBtn" title="Свернуть" aria-label="Свернуть">−</button>
+      <button class="chat-icon-btn" id="closeBtn" title="Закрыть" aria-label="Закрыть">✕</button>
+    </div>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-input-row">
+    <input id="chatInput" class="chat-input" type="text" placeholder="Напишите: «Хочу подтянуть запятые…»" />
+    <button id="sendBtn" class="send-btn">Отправить</button>
+  </div>
+</aside>
+
+<script>
+  // ========= ДОБАВЛЕНО: логика виджета =========
+  const fab = document.getElementById('chatFab');
+  const panel = document.getElementById('chatPanel');
+  const bodyEl = document.getElementById('chatBody');
+  const inputEl = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const minimizeBtn = document.getElementById('minimizeBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  const openChat = ()=>{ panel.style.display='flex'; inputEl.focus(); if(!bodyEl.dataset.greeted){ greet(); bodyEl.dataset.greeted='1'; } };
+  const closeChat = ()=> panel.style.display='none';
+  fab.addEventListener('click',()=> panel.style.display==='flex'?closeChat():openChat());
+  minimizeBtn.addEventListener('click',closeChat);
+  closeBtn.addEventListener('click',closeChat);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeChat(); });
+
+  function addMessage(role, html){ const msg=document.createElement('div'); msg.className=`message ${role}`; msg.innerHTML=html; bodyEl.appendChild(msg); bodyEl.scrollTop=bodyEl.scrollHeight; return msg; }
+  function addTyping(){ return addMessage('bot', `<span class="typing"><span></span><span></span><span></span></span>`); }
+
+  const QUICK = ['Орфография','Пунктуация','Лексика','Синтаксис','Морфология','Цитирование','Обособленные члены'];
+  function chips(){ return `<div class="chips">${QUICK.map(q=>`<button class="chip" data-chip="${q}">${q}</button>`).join('')}</div>`; }
+  function greet(){ addMessage('bot', `Привет! Я подскажу, что повторить. Например, напишите: «Хочу подтянуть запятые». Или выберите подсказку ниже: ${chips()}`); }
+  bodyEl.addEventListener('click', e=>{ const c=e.target.closest('[data-chip]'); if(!c) return; inputEl.value=`Хочу подтянуть ${c.getAttribute('data-chip')}`; handleSend(); });
+
+  function collectTopics(){
+    const topics = [];
+    document.querySelectorAll('.topic-block').forEach(block=>{
+      const section = (block.querySelector('.topic-button')?.textContent || '').trim();
+      block.querySelectorAll('.topic-list a').forEach(a=>{
+        topics.push({ title:(a.textContent||'').trim(), url:a.getAttribute('href'), section });
+      });
+    });
+    return topics;
+  }
+
+  const KEYMAP = [
+    { key:/орфограф/i, tags:['правопис','гласн','приставк','суффикс'] },
+    { key:/пунктуац|знаки|запят|тире|кавыч/i, tags:['обособлен','сложноподчин','сложносочин','цитирован'] },
+    { key:/лексик/i, tags:['значение','синоним','антоним','термин'] },
+    { key:/морфолог/i, tags:['части речи','склонен','спряжен'] },
+    { key:/синтакс/i, tags:['предложение','словосочетан','члены предложен'] },
+  ];
+
+  function rankLocal(query, all){
+    const q = query.toLowerCase();
+    let score = new Map();
+    function bump(item, by){ score.set(item,(score.get(item)||0)+by); }
+    for(const t of all){
+      const title = t.title.toLowerCase();
+      if(title.includes(q)) bump(t,5);
+      for(const k of KEYMAP){ if(k.key.test(q) && (k.key.test(title) || k.tags.some(tag=>title.includes(tag)))) bump(t,3); }
+      if(/запят|тире|кавыч|обособлен|сложноподчин|сложносочин/.test(q) && /запят|тире|кавыч|обособлен|сложноподчин|сложносочин/.test(title)) bump(t,2);
+    }
+    return Array.from(score.entries()).sort((a,b)=>b[1]-a[1]).map(([t])=>t).slice(0,8);
+  }
+
+  async function handleSend(){
+    const all = collectTopics();
+    const txt = inputEl.value.trim(); if(!txt) return;
+    addMessage('user', escapeHtml(txt)); inputEl.value='';
+    const typing = addTyping();
+
+    const local = rankLocal(txt, all);
+    let html = '';
+
+    // Попытка обратиться к серверу с Gemini
+    try{
+      const resp = await fetch('/api/gemini-chat', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ message: txt, candidates: local.length? local : all })
+      });
+      if(resp.ok){
+        const data = await resp.json();
+        if(Array.isArray(data.suggestions) && data.suggestions.length){
+          html = renderSuggestions(data.suggestions, data.summary);
+        }
+      }
+    }catch(e){ /* тихий фолбэк */ }
+
+    if(!html){
+      const fallback = (local.length? local : all).slice(0,6).map(c=>({title:c.title, url:c.url, reason:'Совпадение по ключевым словам'}));
+      html = renderSuggestions(fallback, 'Предварительный список по локальному поиску.');
+    }
+
+    typing.remove();
+    addMessage('bot', html);
+  }
+
+  function renderSuggestions(list, summary){
+    const items = list.map(it=>`<li><a href="${it.url}">${escapeHtml(it.title)}</a>${it.reason?`<div style='font-size:13px;opacity:.8;'>${escapeHtml(it.reason)}</div>`:''}</li>`).join('');
+    return `<div><div style="font-weight:700;margin-bottom:6px;">Рекомендую повторить:</div><ol style="padding-left:18px;">${items}</ol>${summary?`<div style='margin-top:8px;font-style:italic;'>${escapeHtml(summary)}</div>`:''}</div>`;
+  }
+
+  sendBtn.addEventListener('click', handleSend);
+  inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } });
+
+  function escapeHtml(str){ return str.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }[m])); }
 </script>
 
 </body>
