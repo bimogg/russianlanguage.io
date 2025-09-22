@@ -160,7 +160,7 @@
       }
     }
 
-    /* ========= ДОБАВЛЕНО: стили виджета чата ========= */
+    /* ========= Стили виджета чата ========= */
     .chat-fab { position: fixed; right: 20px; bottom: 20px; width: 64px; height: 64px; border-radius: 50%; border: none; cursor: pointer; background: #a69f91; color: #2f2e2a; box-shadow: 0 8px 20px rgba(166,159,145,.5); display: grid; place-items: center; transition: transform .2s, box-shadow .2s, background .2s; z-index: 1000; }
     .chat-fab:hover { transform: translateY(-2px) scale(1.02); background: #8f897e; box-shadow: 0 12px 28px rgba(143,137,126,.6); }
     .chat-fab svg { width: 28px; height: 28px; }
@@ -224,7 +224,6 @@
     </a>
 
     <style>
-
       a::after {
         content: '';
         position: absolute;
@@ -236,9 +235,6 @@
         transition: width 0.3s ease;
       }
     </style>
-
-
-
     </nav>
   </header>
 
@@ -399,7 +395,7 @@
   }
 </script>
 
-<!-- ========= ДОБАВЛЕНО: разметка виджета чата ========= -->
+<!-- ========= Разметка виджета чата ========= -->
 <button class="chat-fab" id="chatFab" aria-label="Открыть чат" title="Помощник по темам">
   <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M4 5.5C4 4.12 5.12 3 6.5 3h11C18.88 3 20 4.12 20 5.5v7c0 1.38-1.12 2.5-2.5 2.5H9l-4 4v-4.5C4 13.62 4 5.5 4 5.5Z" stroke="#2f2e2a" stroke-width="1.5"/>
@@ -425,7 +421,7 @@
 </aside>
 
 <script>
-  // ========= ДОБАВЛЕНО: логика виджета =========
+  // ========= Логика виджета (поиск по всем темам + синонимы + нечёткие совпадения) =========
   const fab = document.getElementById('chatFab');
   const panel = document.getElementById('chatPanel');
   const bodyEl = document.getElementById('chatBody');
@@ -446,9 +442,10 @@
 
   const QUICK = ['Орфография','Пунктуация','Лексика','Синтаксис','Морфология','Цитирование','Обособленные члены'];
   function chips(){ return `<div class="chips">${QUICK.map(q=>`<button class="chip" data-chip="${q}">${q}</button>`).join('')}</div>`; }
-  function greet(){ addMessage('bot', `Привет! Я подскажу, что повторить. Например, напишите: «Хочу подтянуть запятые». Или выберите подсказку ниже: ${chips()}`); }
+  function greet(){ addMessage('bot', `Привет! Я подскажу, что повторить. Например: «Хочу подтянуть запятые» или «Экономическое образование». Либо выбери подсказку: ${chips()}`); }
   bodyEl.addEventListener('click', e=>{ const c=e.target.closest('[data-chip]'); if(!c) return; inputEl.value=`Хочу подтянуть ${c.getAttribute('data-chip')}`; handleSend(); });
 
+  // Собираем все темы (+ раздел) из DOM
   function collectTopics(){
     const topics = [];
     document.querySelectorAll('.topic-block').forEach(block=>{
@@ -460,25 +457,117 @@
     return topics;
   }
 
-  const KEYMAP = [
-    { key:/орфограф/i, tags:['правопис','гласн','приставк','суффикс'] },
-    { key:/пунктуац|знаки|запят|тире|кавыч/i, tags:['обособлен','сложноподчин','сложносочин','цитирован'] },
-    { key:/лексик/i, tags:['значение','синоним','антоним','термин'] },
-    { key:/морфолог/i, tags:['части речи','склонен','спряжен'] },
-    { key:/синтакс/i, tags:['предложение','словосочетан','члены предложен'] },
+  // Нормализация строк
+  const norm = s => (s||'')
+    .toLowerCase()
+    .replace(/ё/g,'е')
+    .replace(/[()"'«»…:,.;!?#+=/_\\|-]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+
+  const tokenize = s => norm(s).split(' ').filter(Boolean);
+
+  // Простейший Левенштейн (для нечёткого совпадения коротких слов)
+  function levenshtein(a,b){
+    const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+    const dp=new Array(n+1); for(let j=0;j<=n;j++) dp[j]=j;
+    for(let i=1;i<=m;i++){
+      let prev=dp[0], tmp; dp[0]=i;
+      for(let j=1;j<=n;j++){
+        tmp=dp[j];
+        dp[j]=Math.min(
+          dp[j]+1,           // удаление
+          dp[j-1]+1,         // вставка
+          prev + (a[i-1]===b[j-1]?0:1) // замена
+        );
+        prev=tmp;
+      }
+    }
+    return dp[n];
+  }
+
+  // Словарь синонимов/триггеров
+  const SYN = [
+    {re:/запят|пунктуац|знаки препинани|кавыч|тире|скоб/i, add:['знаки препинания','запятые','обособленные','сложноподчиненные','сложносочиненные','кавычки','тире','цитирование']},
+    {re:/обособлен/i, add:['обособленные','деепричастный оборот','существительные с предлогами','определения','обстоятельства']},
+    {re:/цитир|кавыч/i, add:['кавычки','цитирование','пунктуация']},
+    {re:/синтакс|предложен|словосочетан/i, add:['синтаксис','члены предложения','сложные предложения']},
+    {re:/лексик|термин/i, add:['лексика','значение слов','синонимы','антонимы','термины']},
+    {re:/морфолог|части речи|склонен|спряжен/i, add:['морфология','части речи','окончания']},
+    {re:/экономическ.*образован/i, add:['образование','экологическое образование','экономика']}, // для частой оговорки
+    {re:/экологическ.*образован/i, add:['экология','экологическое образование','природа']},
   ];
 
-  function rankLocal(query, all){
-    const q = query.toLowerCase();
-    let score = new Map();
-    function bump(item, by){ score.set(item,(score.get(item)||0)+by); }
-    for(const t of all){
-      const title = t.title.toLowerCase();
-      if(title.includes(q)) bump(t,5);
-      for(const k of KEYMAP){ if(k.key.test(q) && (k.key.test(title) || k.tags.some(tag=>title.includes(tag)))) bump(t,3); }
-      if(/запят|тире|кавыч|обособлен|сложноподчин|сложносочин/.test(q) && /запят|тире|кавыч|обособлен|сложноподчин|сложносочин/.test(title)) bump(t,2);
-    }
-    return Array.from(score.entries()).sort((a,b)=>b[1]-a[1]).map(([t])=>t).slice(0,8);
+  // Ранжирование по всему списку тем
+  function rankAll(query, topics){
+    const qNorm = norm(query);
+    const qTokens = tokenize(query);
+    // Сбор синонимов на основе запроса
+    let extra = [];
+    SYN.forEach(s => { if(s.re.test(query)) extra = extra.concat(s.add); });
+    const extraTokens = extra.flatMap(tokenize);
+
+    const reasons = new Map(); // url -> [reasons]
+    const scores = new Map();  // url -> score
+
+    const bump=(url,by,why)=>{
+      scores.set(url,(scores.get(url)||0)+by);
+      if(why){
+        const arr = reasons.get(url) || [];
+        if(arr.length<3) arr.push(why); // ограничим 3 причинами для лаконичности
+        reasons.set(url,arr);
+      }
+    };
+
+    topics.forEach(t=>{
+      const title = norm(t.title + ' ' + (t.section||''));
+      const url = t.url;
+
+      // 1) Прямые включения
+      if(qNorm && title.includes(qNorm)) bump(url, 10, 'Прямое совпадение');
+
+      // 2) По токенам запроса
+      qTokens.forEach(tok=>{
+        if(!tok) return;
+        if(title.includes(tok)) bump(url, 4, `Слово «${tok}»`);
+        else {
+          // 3) Нечёткие совпадения (для коротких слов 4–10 символов)
+          if(tok.length>=4 && tok.length<=10){
+            const words = title.split(' ');
+            let best = Infinity;
+            for(const w of words){
+              if(!w) continue;
+              const d = levenshtein(tok, w);
+              if(d<best) best=d;
+              if(best===0) break;
+            }
+            if(best<=2) bump(url, 3, `Похоже на «${tok}»`);
+          }
+        }
+      });
+
+      // 4) Синонимы/ассоциации
+      extraTokens.forEach(tok=>{
+        if(tok && title.includes(tok)) bump(url, 2, `Синоним/связанное: «${tok}»`);
+      });
+
+      // 5) Бонусы за раздел, если смысл совпадает
+      if(/пунктуац|запят|кавыч|обособлен/.test(qNorm) && /Знаки|обособлен|сложн/i.test(t.title)) bump(url, 2, 'Пунктуация в теме');
+      if(/образован/.test(qNorm) && /образован/i.test(t.title)) bump(url, 3, 'Есть «образование» в теме');
+      if(/экономик/.test(qNorm) && /Экономика/i.test(t.section)) bump(url, 1, 'Раздел «Экономика»');
+      if(/эколог/i.test(qNorm) && /Экология/i.test(t.section)) bump(url, 1, 'Раздел «Экология»');
+    });
+
+    // Сформировать выдачу
+    const ranked = topics
+      .map(t=>{
+        const sc = scores.get(t.url)||0;
+        return { ...t, score: sc, reason: (reasons.get(t.url)||[]).join('; ') };
+      })
+      .filter(x=>x.score>0)
+      .sort((a,b)=> b.score - a.score || a.title.localeCompare(b.title));
+
+    return ranked;
   }
 
   async function handleSend(){
@@ -487,26 +576,37 @@
     addMessage('user', escapeHtml(txt)); inputEl.value='';
     const typing = addTyping();
 
-    const local = rankLocal(txt, all);
+    // Локальный ранж по ВСЕМ темам
+    const rankedLocal = rankAll(txt, all);
     let html = '';
 
-    // Попытка обратиться к серверу с Gemini
+    // Пытаемся спросить Gemini — передаём ВСЕ темы
     try{
       const resp = await fetch('/api/gemini-chat', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ message: txt, candidates: local.length? local : all })
+        body: JSON.stringify({ message: txt, candidates: all })
       });
       if(resp.ok){
         const data = await resp.json();
         if(Array.isArray(data.suggestions) && data.suggestions.length){
-          html = renderSuggestions(data.suggestions, data.summary);
+          // обогащаем секцией, если её нет
+          const byUrl = new Map(all.map(t=>[t.url, t.section]));
+          const enriched = data.suggestions.map(s=>({
+            ...s,
+            section: s.section || byUrl.get(s.url) || ''
+          }));
+          html = renderSuggestions(enriched, data.summary);
         }
       }
     }catch(e){ /* тихий фолбэк */ }
 
     if(!html){
-      const fallback = (local.length? local : all).slice(0,6).map(c=>({title:c.title, url:c.url, reason:'Совпадение по ключевым словам'}));
-      html = renderSuggestions(fallback, 'Предварительный список по локальному поиску.');
+      // Фолбэк: берём топ-10 локальных результатов
+      const fallback = rankedLocal.slice(0,10).map(c=>({
+        title:c.title, url:c.url, section:c.section,
+        reason: c.reason || 'Совпадение по ключевым словам'
+      }));
+      html = renderSuggestions(fallback, 'Предварительная подборка по локальному поиску.');
     }
 
     typing.remove();
@@ -514,14 +614,25 @@
   }
 
   function renderSuggestions(list, summary){
-    const items = list.map(it=>`<li><a href="${it.url}">${escapeHtml(it.title)}</a>${it.reason?`<div style='font-size:13px;opacity:.8;'>${escapeHtml(it.reason)}</div>`:''}</li>`).join('');
-    return `<div><div style="font-weight:700;margin-bottom:6px;">Рекомендую повторить:</div><ol style="padding-left:18px;">${items}</ol>${summary?`<div style='margin-top:8px;font-style:italic;'>${escapeHtml(summary)}</div>`:''}</div>`;
+    const items = list.map(it=>{
+      const sec = it.section ? `<div style="font-size:12px;opacity:.8;">Раздел: ${escapeHtml(it.section)}</div>` : '';
+      const why = it.reason ? `<div style='font-size:12px;opacity:.7;'>${escapeHtml(it.reason)}</div>` : '';
+      return `<li style="margin:8px 0;">
+        <a href="${it.url}">${escapeHtml(it.title)}</a>
+        ${sec}${why}
+      </li>`;
+    }).join('');
+    return `<div>
+      <div style="font-weight:700;margin-bottom:6px;">Рекомендую повторить:</div>
+      <ol style="padding-left:18px;">${items}</ol>
+      ${summary?`<div style='margin-top:8px;font-style:italic;'>${escapeHtml(summary)}</div>`:''}
+    </div>`;
   }
 
   sendBtn.addEventListener('click', handleSend);
   inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } });
 
-  function escapeHtml(str){ return str.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }[m])); }
+  function escapeHtml(str){ return (str||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' }[m])); }
 </script>
 
 </body>
