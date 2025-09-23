@@ -1,341 +1,406 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Темы по русскому языку</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      margin: 0;
-      font-family: Georgia, serif;
-      background: linear-gradient(to bottom, #fdf5e6, #f8f1e0);
-      color: #3b2a26;
-      line-height: 1.6;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #e2ddd4;
-      padding: 20px 40px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      user-select: none;
-    }
-    header img {
-      height: 70px;
-      width: auto;
-      object-fit: contain;
-    }
-    nav a {
-      margin: 0 15px;
-      text-decoration: none;
-      color: #3b2a26;
-      font-size: 16px;
-    }
-    .welcome {
-      text-align: center;
-      padding: 50px 20px 30px;
-    }
-    .start-text {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #e0d3c2;
-      border-radius: 5px;
-      font-weight: bold;
-      margin-bottom: 30px;
-      font-size: 20px;
-    }
-    .divider {
-      width: 80%;
-      margin: 0 auto;
-      border-top: 1px solid #d3c5b2;
-    }
-    .topics-container {
-      padding: 40px 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .topics-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    .topic-block {
-      background: #f4ede3;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-    }
-    .topic-button {
-      background: #e9ded1;
-      border: none;
-      padding: 15px 20px;
-      font-size: 18px;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-      text-align: left;
-      transition: background 0.3s ease;
-    }
-    .topic-button:hover {
-      background: #d8cdc0;
-    }
-    .topic-list {
-      list-style: none;
-      margin: 10px 0 0;
-      padding: 0 10px;
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 8px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease, padding 0.3s ease;
-      font-size: 16px;
-    }
-    .topic-list.open {
-      max-height: 1000px;
-      padding: 10px;
-    }
-    @media (max-width: 1024px) {
-      .topics-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .topics-grid { grid-template-columns: 1fr; }
-    }
-    /* ========= Стили чата ========= */
-    .chat-fab {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      background: #a69f91;
-      color: #2f2e2a;
-      box-shadow: 0 8px 20px rgba(166,159,145,.5);
-      display: grid;
-      place-items: center;
-      transition: transform .2s, box-shadow .2s, background .2s;
-      z-index: 1000;
-    }
-    .chat-fab:hover {
-      transform: translateY(-2px) scale(1.02);
-      background: #8f897e;
-      box-shadow: 0 12px 28px rgba(143,137,126,.6);
-    }
-    .chat-panel {
-      position: fixed;
-      right: 20px;
-      bottom: 96px;
-      width: 360px;
-      max-width: calc(100vw - 40px);
-      max-height: 70vh;
-      display: none;
-      flex-direction: column;
-      background: #f4ede3;
-      color: #3b2a26;
-      border-radius: 16px;
-      box-shadow: 0 16px 40px rgba(0,0,0,.15);
-      overflow: hidden;
-      z-index: 1000;
-    }
-    .chat-panel.open { display: flex; }
-    .chat-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      background: #e2ddd4;
-      border-bottom: 1px solid rgba(0,0,0,.05);
-    }
-    .chat-title { font-weight: 700; font-size: 18px; }
-    .chat-body {
-      padding: 12px;
-      overflow-y: auto;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .chat-input-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px;
-      background: #e2ddd4;
-      border-top: 1px solid rgba(0,0,0,.05);
-    }
-    .chat-input {
-      flex: 1;
-      font-size: 16px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-    }
-    .send-btn {
-      background: #a69f91;
-      color: #2f2e2a;
-      border: none;
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .send-btn:hover { background: #8f897e; }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Образовательный портал</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            margin: 0;
+            font-family: Georgia, serif;
+            background: linear-gradient(to bottom, #fdf5e6, #f8f1e0);
+            color: #3b2a26;
+            line-height: 1.6;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e2ddd4;
+            padding: 20px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        header img { height: 70px; width: auto; object-fit: contain; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo img { height: 50px; }
+        nav a { margin: 0 15px; text-decoration: none; color: #3b2a26; font-size: 16px; }
+        .welcome { text-align: center; padding: 50px 20px 30px; }
+        .start-text { display: inline-block; padding: 10px 20px; background-color: #e0d3c2; border-radius: 5px; font-weight: bold; margin-bottom: 30px; font-size: 20px; }
+        .divider { width: 80%; margin: 0 auto; border-top: 1px solid #d3c5b2; }
+        .topics-container { padding: 40px 20px; max-width: 1200px; margin: 0 auto; }
+        .topics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .topic-block { background: #f4ede3; border-radius: 10px; padding: 15px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; }
+        .topic-button { background: #e9ded1; border: none; padding: 15px 20px; font-size: 18px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; text-align: left; transition: background 0.3s ease; }
+        .topic-button:hover { background: #d8cdc0; }
+        .topic-list { list-style: none; margin: 10px 0 0; padding: 0 10px; background: rgba(255, 255, 255, 0.7); border-radius: 8px; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; font-size: 16px; }
+        .topic-list.open { max-height: 1000px; padding: 10px; }
+        .topic-list li { padding: 8px 0; border-bottom: 1px solid #e0d3c2; }
+        .topic-list li:last-child { border-bottom: none; }
+        .topic-list li a { text-decoration: none; color: #3b2a26; }
+        .topic-list li strong { display: block; margin-bottom: 6px; color: #8b5a2b; font-size: 18px; }
+        @media (max-width: 1024px) { .topics-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .topics-grid { grid-template-columns: 1fr; } }
+
+        /* ========= Стили чата ========= */
+        .chat-fab { position: fixed; right: 20px; bottom: 20px; width: 64px; height: 64px; border-radius: 50%; border: none; cursor: pointer; background: #a69f91; color: #2f2e2a; box-shadow: 0 8px 20px rgba(166,159,145,.5); display: grid; place-items: center; transition: transform .2s, box-shadow .2s, background .2s; z-index: 1000; }
+        .chat-fab:hover { transform: translateY(-2px) scale(1.02); background: #8f897e; box-shadow: 0 12px 28px rgba(143,137,126,.6); }
+        .chat-fab svg { width: 28px; height: 28px; }
+        .chat-panel { position: fixed; right: 20px; bottom: 96px; width: 360px; max-width: calc(100vw - 40px); max-height: 70vh; display: none; flex-direction: column; background: #f4ede3; color: #3b2a26; border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,.15); overflow: hidden; z-index: 1000; }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #e2ddd4; border-bottom: 1px solid rgba(0,0,0,.05); }
+        .chat-title { font-weight: 700; font-size: 18px; }
+        .chat-controls { display: flex; gap: 8px; }
+        .chat-icon-btn { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 8px; font-size: 24px; color: #3b2a26; line-height: 1; }
+        .chat-icon-btn:hover { background: rgba(0,0,0,.06); }
+        .chat-body { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 85%; border-radius: 16px; padding: 10px 12px; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+        .message.bot { background: #fff; align-self: flex-start; }
+        .message.user { background: #e9e4da; align-self: flex-end; }
+        .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .chip { background: #fff; border: 1px solid rgba(0,0,0,.08); padding: 6px 10px; border-radius: 999px; cursor: pointer; font-size: 14px; transition: background .2s, border-color .2s; }
+        .chip:hover { background: #f7f4ee; border-color: rgba(0,0,0,.15); }
+        .typing { display: flex; align-items: center; gap: 4px; padding: 10px 12px; }
+        .typing span { display: inline-block; width: 8px; height: 8px; margin: 0 2px; background: #9b9486; border-radius: 50%; animation: blink 1s infinite; }
+        .typing span:nth-child(2) { animation-delay: .2s; }
+        .typing span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blink { 0%,80%,100%{ opacity:.2 } 40%{ opacity:1 } }
+        .chat-input-row { display: flex; align-items: center; gap: 8px; padding: 10px; background: #e2ddd4; border-top: 1px solid rgba(0,0,0,.05); }
+        .chat-input { flex: 1; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,.12); background: #fff; }
+        .send-btn { background: #a69f91; color: #2f2e2a; border: none; border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer; transition: background .2s; }
+        .send-btn:hover { background: #8f897e; }
+        a { color: #8b5a2b; text-decoration: underline; }
+    </style>
 </head>
 <body>
+
 <header>
-  <div style="display:flex; align-items:center;">
-    <img src="aitu-logo-3.png" alt="Логотип АИТУ" />
-  </div>
-  <nav>
-    <a href="proect.html" style="font-size:20px;font-weight:bold;color:#4b473e;">О проекте</a>
-  </nav>
+    <div><img src="aitu-logo-3.png" alt="Логотип АИТУ" /></div>
+    <nav><a href="proect.html">О проекте</a></nav>
 </header>
 
 <section class="welcome">
-  <h1 style="font-size:40px;">Приветствуем вас на сайте по русскому языку</h1>
-  <p style="font-size:25px;text-align:center;margin:20px 0;color:#3b2a26;">
-    Образовательный портал для студентов, изучающих русский язык с точки зрения науки и междисциплинарных исследований
-  </p>
-  <div class="start-text">Начать изучение тем</div>
-  <div class="divider"></div>
+    <h1>Приветствуем вас на сайте по русскому языку</h1>
+    <p>Образовательный портал для студентов...</p>
+    <div class="start-text">Начать изучение тем</div>
+    <div class="divider"></div>
 </section>
 
 <section class="topics-container">
-  <div class="topics-grid">
-    <!-- 🎭 Культура -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">🎭 Культура и общество</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="1.1.1.html">1.1.1.Диалог культур...</a></li>
-        <li><a href="1.1.2.html">1.1.2. Толерантность и её виды...</a></li>
-        <li><a href="1.1.3.html">1.1.3. Толерантность в мире...</a></li>
-        <li><a href="1.1.4.html">1.1.4. Лексика публицистического стиля</a></li>
-        <li><a href="1.1.5.html">1.1.5. Толерантная личность...</a></li>
-      </ul>
+    <div class="topics-grid">
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">🎭 Культура и общество</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="1.1.1.html">1.1.1. Диалог культур...</a></li>
+                <li><a href="1.1.2.html">1.1.2. Толерантность и её виды...</a></li>
+                <li><a href="1.1.3.html">1.1.3. Толерантность в мире...</a></li>
+                <li><a href="1.1.4.html">1.1.4. Лексика публицистического стиля</a></li>
+                <li><a href="1.1.5.html">1.1.5. Толерантная личность...</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">🔬 Естественные науки</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="2.1.1.html">2.1.1.Физика и природа...</a></li>
+                <li><a href="2.1.2.html">2.1.2. Глаголы несовершенного вида</a></li>
+                <li><a href="2.1.3.html">2.1.3. Физика в жизни...</a></li>
+                <li><a href="2.1.4.html">2.1.4. Открытия казахстанских учёных...</a></li>
+                <li><a href="2.1.5.html">2.1.5. Свои открытия...</a></li>
+                <li><a href="2.1.6.html">2.1.6. Современные открытия</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">💻 Цифровые технологии</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="3.1.1.html">3.1.1. Технологии в Казахстане</a></li>
+                <li><a href="3.1.2.html">3.1.2. Цифровые технологии в нашей жизни</a></li>
+                <li><a href="3.1.3.html">3.1.3. Знаки препинания с обстоятельствами</a></li>
+                <li><a href="3.1.4.html">3.1.4. «Цифровой Казахстан»</a></li>
+                <li><a href="3.1.5.html">3.1.5. Знаки препинания с существительными</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">🧪 Биотехнологии</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="4.1.1.html">4.1.1. Биотехнологии и этика</a></li>
+                <li><a href="4.1.2.html">4.1.2. Знаки препинания в сложносочинённых</a></li>
+                <li><a href="4.1.3.html">4.1.3. Направления биотехнологии</a></li>
+                <li><a href="4.1.4.html">4.1.4. Профессии в биотехнологии</a></li>
+                <li><a href="4.1.5.html">4.1.5. Знаки препинания в цитировании</a></li>
+                <li><a href="4.1.6.html">4.1.6. Знаки препинания в неполных предложениях</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">⚡ Энергетика</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="5.1.1.html">5.1.1. Причины проблем энергетики</a></li>
+                <li><a href="5.1.2.html">5.1.2. Развитие энергетики в Казахстане</a></li>
+                <li><a href="5.1.3.html">5.1.3. Пути решения проблем</a></li>
+                <li><a href="5.1.4.html">5.1.4. Лексика энергетики</a></li>
+                <li><a href="5.1.5.html">5.1.5. Знаки препинания в сложноподчинённых</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">🌍 Экология</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="6.1.1.html">6.1.1. Экология и охрана природы</a></li>
+                <li><a href="6.1.2.html">6.1.2. Проблемы загрязнения</a></li>
+                <li><a href="6.1.3.html">6.1.3. Методы защиты природы</a></li>
+                <li><a href="6.1.4.html">6.1.4. Экологические термины</a></li>
+                <li><a href="6.1.5.html">6.1.5. Экологическое образование</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">👥 Молодёжь и общество</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="7.1.1.html">7.1.1. Молодежная культура</a></li>
+                <li><a href="7.1.2.html">7.1.2. Саморазвитие</a></li>
+                <li><a href="7.1.3.html">7.1.3. Проблемы поколения Z</a></li>
+                <li><a href="7.1.4.html">7.1.4. Как реализовать себя</a></li>
+                <li><a href="7.1.5.html">7.1.5. Речевая культура молодежи</a></li>
+                <li><a href="7.1.6.html">7.1.6. Проблема выбора профессии</a></li>
+                <li><a href="7.1.7.html">7.1.7. Профессии технико-технологического направления</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">💰 Экономика</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="8.1.1.html">8.1.1. Что такое экономика?</a></li>
+                <li><a href="8.1.2.html">8.1.2. Знаки препинания с обособленными членами</a></li>
+                <li><a href="8.1.3.html">8.1.3. Цифровая экономика Казахстана</a></li>
+                <li><a href="8.1.4.html">8.1.4. Умный дом: реальность и перспектива</a></li>
+            </ul>
+        </div>
+        <div class="topic-block">
+            <button class="topic-button" onclick="toggleList(this)">📚 Этика и наука</button>
+            <ul class="topic-list">
+                <li><strong>Выберите тему</strong></li>
+                <li><a href="9.1.1.html">9.1.1. Этика науки</a></li>
+                <li><a href="9.1.2.html">9.1.2. Технические термины</a></li>
+                <li><a href="9.1.3.html">9.1.3. Этика клонирования</a></li>
+                <li><a href="9.1.4.html">9.1.4. Знаки препинания в сложных предложениях</a></li>
+                <li><a href="9.1.5.html">9.1.5. Этические проблемы киборгов</a></li>
+            </ul>
+        </div>
     </div>
-    <!-- 🔬 Естественные науки -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">🔬 Естественные науки</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="2.1.1.html">2.1.1.Физика и природа...</a></li>
-        <li><a href="2.1.2.html">2.1.2. Глаголы несовершенного вида</a></li>
-        <li><a href="2.1.3.html">2.1.3. Физика в жизни...</a></li>
-        <li><a href="2.1.4.html">2.1.4. Открытия казахстанских учёных...</a></li>
-        <li><a href="2.1.5.html">2.1.5. Свои открытия...</a></li>
-        <li><a href="2.1.6.html">2.1.6. Современные открытия</a></li>
-      </ul>
-    </div>
-    <!-- 💻 Цифровые технологии -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">💻 Цифровые технологии</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="3.1.1.html">3.1.1. Технологии в Казахстане</a></li>
-        <li><a href="3.1.2.html">3.1.2. Цифровые технологии в нашей жизни</a></li>
-        <li><a href="3.1.3.html">3.1.3. Знаки препинания с обстоятельствами</a></li>
-        <li><a href="3.1.4.html">3.1.4. «Цифровой Казахстан»</a></li>
-        <li><a href="3.1.5.html">3.1.5. Знаки препинания с существительными</a></li>
-      </ul>
-    </div>
-    <!-- 🧪 Биотехнологии -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">🧪 Биотехнологии</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="4.1.1.html">4.1.1. Биотехнологии и этика</a></li>
-        <li><a href="4.1.2.html">4.1.2. Знаки препинания в сложносочинённых</a></li>
-        <li><a href="4.1.3.html">4.1.3. Направления биотехнологии</a></li>
-        <li><a href="4.1.4.html">4.1.4. Профессии в биотехнологии</a></li>
-        <li><a href="4.1.5.html">4.1.5. Знаки препинания в цитировании</a></li>
-        <li><a href="4.1.6.html">4.1.6. Знаки препинания в неполных предложениях</a></li>
-      </ul>
-    </div>
-    <!-- ⚡ Энергетика -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">⚡ Энергетика</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="5.1.1.html">5.1.1. Причины проблем энергетики</a></li>
-        <li><a href="5.1.2.html">5.1.2. Развитие энергетики в Казахстане</a></li>
-        <li><a href="5.1.3.html">5.1.3. Пути решения проблем</a></li>
-        <li><a href="5.1.4.html">5.1.4. Лексика энергетики</a></li>
-        <li><a href="5.1.5.html">5.1.5. Знаки препинания в сложноподчинённых</a></li>
-      </ul>
-    </div>
-    <!-- 🌍 Экология -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">🌍 Экология</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="6.1.1.html">6.1.1. Экология и охрана природы</a></li>
-        <li><a href="6.1.2.html">6.1.2. Проблемы загрязнения</a></li>
-        <li><a href="6.1.3.html">6.1.3. Методы защиты природы</a></li>
-        <li><a href="6.1.4.html">6.1.4. Экологические термины</a></li>
-        <li><a href="6.1.5.html">6.1.5. Экологическое образование</a></li>
-      </ul>
-    </div>
-    <!-- 👥 Молодёжь -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">👥 Молодёжь и общество</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="7.1.1.html">7.1.1. Молодежная культура</a></li>
-        <li><a href="7.1.2.html">7.1.2. Саморазвитие</a></li>
-        <li><a href="7.1.3.html">7.1.3. Проблемы поколения Z</a></li>
-        <li><a href="7.1.4.html">7.1.4. Как реализовать себя</a></li>
-        <li><a href="7.1.5.html">7.1.5. Речевая культура молодежи</a></li>
-        <li><a href="7.1.6.html">7.1.6. Проблема выбора профессии</a></li>
-        <li><a href="7.1.7.html">7.1.7. Профессии технико-технологического направления</a></li>
-      </ul>
-    </div>
-    <!-- 💰 Экономика -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">💰 Экономика</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="8.1.1.html">8.1.1. Что такое экономика?</a></li>
-        <li><a href="8.1.2.html">8.1.2. Знаки препинания с обособленными членами</a></li>
-        <li><a href="8.1.3.html">8.1.3. Цифровая экономика Казахстана</a></li>
-        <li><a href="8.1.4.html">8.1.4. Умный дом: реальность и перспектива</a></li>
-      </ul>
-    </div>
-    <!-- 📚 Этика и наука -->
-    <div class="topic-block">
-      <button class="topic-button" onclick="toggleList(this)">📚 Этика и наука</button>
-      <ul class="topic-list">
-        <li><strong>Выберите тему</strong></li>
-        <li><a href="9.1.1.html">9.1.1. Этика науки</a></li>
-        <li><a href="9.1.2.html">9.1.2. Технические термины</a></li>
-        <li><a href="9.1.3.html">9.1.3. Этика клонирования</a></li>
-        <li><a href="9.1.4.html">9.1.4. Знаки препинания в сложных предложениях</a></li>
-        <li><a href="9.1.5.html">9.1.5. Этические проблемы киборгов</a></li>
-      </ul>
-    </div>
-  </div>
 </section>
 
-<!-- Кнопка вызова -->
-<button class="chat-fab" id="chatFab" aria-label="Открыть чат" title="Помощник по темам">💬</button>
+<button class="chat-fab" id="chatFab" title="Помощник по темам">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+    </svg>
+</button>
 
-<!-- Панель чата -->
 <aside class="chat-panel" id="chatPanel">
-  <div class="chat-header">
-    <div class="chat-title">Помощник по темам</div>
-    <div class="chat-controls">
-      <button class="chat-icon-btn" id="minimizeBtn" title="Свернуть">−</button>
-      <button class="chat-icon-btn" id="closeBtn" title="Закрыть">✕</button>
+    <div class="chat-header">
+        <div class="chat-title">Помощник по темам</div>
+        <div class="chat-controls">
+            <button class="chat-icon-btn" id="minimizeBtn" title="Свернуть">—</button>
+            <button class="chat-icon-btn" id="closeBtn" title="Закрыть">✕</button>
+        </div>
     </div>
-  </div>
-  <div class="chat-body" id="chatBody"></div>
-  <div class="chat-input-row">
-    <input id="
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input-row">
+        <input id="chatInput" class="chat-input" type="text" placeholder="Напишите запрос..." />
+        <button id="sendBtn" class="send-btn">Отправить</button>
+    </div>
+</aside>
+
+<script>
+    // Data for the chat assistant
+    const topicsData = {
+        'орфография': {
+            description: 'Повторим правила написания слов, приставок, суффиксов и окончаний.',
+            links: [
+                { title: 'Глаголы несовершенного вида', href: '2.1.2.html' },
+                { title: 'Лексика публицистического стиля', href: '1.1.4.html' }
+            ]
+        },
+        'пунктуация': {
+            description: 'Давайте разберем знаки препинания в разных типах предложений.',
+            links: [
+                { title: 'Знаки препинания с обстоятельствами', href: '3.1.3.html' },
+                { title: 'Знаки препинания с существительными', href: '3.1.5.html' },
+                { title: 'Знаки препинания в сложносочинённых предложениях', href: '4.1.2.html' },
+                { title: 'Знаки препинания в цитировании', href: '4.1.5.html' },
+                { title: 'Знаки препинания в неполных предложениях', href: '4.1.6.html' },
+                { title: 'Знаки препинания в сложноподчинённых предложениях', href: '5.1.5.html' },
+                { title: 'Знаки препинания с обособленными членами', href: '8.1.2.html' },
+                { title: 'Знаки препинания в сложных предложениях', href: '9.1.4.html' }
+            ]
+        },
+        'лексика': {
+            description: 'Изучим слова и их значения, а также стили речи.',
+            links: [
+                { title: 'Лексика публицистического стиля', href: '1.1.4.html' },
+                { title: 'Экологические термины', href: '6.1.4.html' },
+                { title: 'Речевая культура молодежи', href: '7.1.5.html' },
+                { title: 'Технические термины', href: '9.1.2.html' },
+                { title: 'Лексика энергетики', href: '5.1.4.html' }
+            ]
+        },
+        'синтаксис': {
+            description: 'Потренируем построение предложений и связь слов.',
+            links: [
+                { title: 'Знаки препинания в сложносочинённых предложениях', href: '4.1.2.html' },
+                { title: 'Знаки препинания в сложноподчинённых предложениях', href: '5.1.5.html' },
+                { title: 'Знаки препинания в сложных предложениях', href: '9.1.4.html' }
+            ]
+        },
+        'морфология': {
+            description: 'Рассмотрим части речи и их особенности.',
+            links: [
+                { title: 'Глаголы несовершенного вида', href: '2.1.2.html' }
+            ]
+        },
+        'цитирование': {
+            description: 'Научимся правильно оформлять чужую речь в своих текстах.',
+            links: [
+                { title: 'Знаки препинания в цитировании', href: '4.1.5.html' }
+            ]
+        },
+        'обособленные члены': {
+            description: 'Обособленные члены предложения - это второстепенные члены предложения, которые выделяются по смыслу и интонации.',
+            links: [
+                { title: 'Знаки препинания с обособленными членами', href: '8.1.2.html' }
+            ]
+        },
+        'экономическое образование': {
+            description: 'Изучим темы, связанные с экономикой.',
+            links: [
+                { title: 'Что такое экономика?', href: '8.1.1.html' },
+                { title: 'Цифровая экономика Казахстана', href: '8.1.3.html' }
+            ]
+        },
+        'расстановка запятых': {
+            description: 'Выберите, какую тему по пунктуации вам нужно повторить:',
+            links: [
+                { title: 'Знаки препинания с обособленными членами', href: '8.1.2.html' },
+                { title: 'Знаки препинания в сложных предложениях', href: '9.1.4.html' },
+                { title: 'Знаки препинания в цитировании', href: '4.1.5.html' },
+                { title: 'Знаки препинания в сложносочинённых', href: '4.1.2.html' }
+            ]
+        }
+    };
+
+    const keywords = Object.keys(topicsData).map(key => key.toLowerCase());
+
+    // DOM Elements
+    const fab = document.getElementById('chatFab');
+    const panel = document.getElementById('chatPanel');
+    const bodyEl = document.getElementById('chatBody');
+    const inputEl = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const minimizeBtn = document.getElementById('minimizeBtn');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Chat functionality
+    function toggleList(button) {
+        const allLists = document.querySelectorAll('.topic-list');
+        const currentList = button.nextElementSibling;
+        const isAlreadyOpen = currentList.classList.contains('open');
+        allLists.forEach(list => { if (list !== currentList) list.classList.remove('open'); });
+        currentList.classList.toggle('open', !isAlreadyOpen);
+    }
+
+    function addMessage(role, html) {
+        const msg = document.createElement('div');
+        msg.className = `message ${role}`;
+        msg.innerHTML = html;
+        bodyEl.appendChild(msg);
+        bodyEl.scrollTop = bodyEl.scrollHeight;
+    }
+
+    function addTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.className = 'message bot typing';
+        indicator.innerHTML = '<span></span><span></span><span></span>';
+        bodyEl.appendChild(indicator);
+        bodyEl.scrollTop = bodyEl.scrollHeight;
+        return indicator;
+    }
+
+    function removeTypingIndicator(indicator) {
+        if (indicator) {
+            bodyEl.removeChild(indicator);
+        }
+    }
+
+    function greet() {
+        addMessage('bot', `Привет! Я подскажу, что повторить. Например: «Хочу подтянуть запятые» или «Экономическое образование». Либо выбери подсказку:<div class="chips">${keywords.map(k => `<span class="chip" data-keyword="${k}">${k.charAt(0).toUpperCase() + k.slice(1)}</span>`).join('')}</div>`);
+    }
+
+    function handleUserInput(input) {
+        const normalizedInput = input.toLowerCase().trim();
+        let response = '';
+        let foundTopic = null;
+
+        // Find a matching topic
+        for (const key in topicsData) {
+            if (normalizedInput.includes(key)) {
+                foundTopic = topicsData[key];
+                break;
+            }
+        }
+        
+        // Handle response
+        const typingIndicator = addTypingIndicator();
+        setTimeout(() => {
+            removeTypingIndicator(typingIndicator);
+            if (foundTopic) {
+                let linksHtml = foundTopic.links.map(link => `<a href="${link.href}">${link.title}</a>`).join('<br>');
+                response = `${foundTopic.description}<br><br>Вот подходящие темы:<br>${linksHtml}`;
+            } else {
+                response = `Извините, я не нашел подходящих тем по вашему запросу: "${input}". Попробуйте переформулировать или выбрать один из предложенных вариантов.`;
+            }
+            addMessage('bot', response);
+        }, 1000); // simulate a delay
+    }
+
+    // Event listeners
+    fab.addEventListener('click', () => {
+        panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+        if (panel.style.display === 'flex') {
+            inputEl.focus();
+            if (!bodyEl.dataset.greeted) {
+                greet();
+                bodyEl.dataset.greeted = '1';
+            }
+        }
+    });
+
+    minimizeBtn.addEventListener('click', () => panel.style.display = 'none');
+    closeBtn.addEventListener('click', () => panel.style.display = 'none');
+
+    sendBtn.addEventListener('click', () => {
+        const txt = inputEl.value.trim();
+        if (!txt) return;
+        addMessage('user', txt);
+        inputEl.value = '';
+        handleUserInput(txt);
+    });
+
+    inputEl.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendBtn.click();
+        }
+    });
+
+    bodyEl.addEventListener('click', (e) => {
+        if (e.target.classList.contains('chip')) {
+            const keyword = e.target.dataset.keyword;
+            addMessage('user', e.target.textContent);
+            handleUserInput(keyword);
+        }
+    });
+</script>
+
+</body>
+</html>
