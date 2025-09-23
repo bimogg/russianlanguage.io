@@ -104,6 +104,9 @@
             width: 100%;
             text-align: left;
             transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .topic-button:hover {
@@ -360,6 +363,32 @@
     </div>
 </section>
 
+<button class="chat-fab" id="chatFab" aria-label="Открыть чат">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+        <path d="M256 0C114.6 0 0 102.9 0 230.1c0 51.5 17.6 98.6 47.9 138.8C35.9 397.7 0 457.9 0 457.9c-29.3 2.6-32.9 39.5-2.6 60.5C5.1 526.4 34.6 512 64 512c58.9 0 106.8-21.7 132-47.8 25.8 1.9 52.3 2.9 78.4 2.9 141.4 0 256-102.9 256-230.1S397.4 0 256 0zM152 256c0-13.3 10.7-24 24-24s24 10.7 24 24v24c0 13.3-10.7 24-24 24s-24-10.7-24-24v-24zm136 0c0-13.3 10.7-24 24-24s24 10.7 24 24v24c0 13.3-10.7 24-24 24s-24-10.7-24-24v-24zm136 0c0-13.3 10.7-24 24-24s24 10.7 24 24v24c0 13.3-10.7 24-24 24s-24-10.7-24-24v-24z"/>
+    </svg>
+</button>
+
+<div class="chat-panel" id="chatPanel">
+    <div class="chat-header">
+        <div class="chat-title">Помощник по темам</div>
+        <div class="chat-controls">
+            <button class="chat-icon-btn" id="minimizeBtn" aria-label="Свернуть">
+                &minus;
+            </button>
+            <button class="chat-icon-btn" id="closeBtn" aria-label="Закрыть">
+                &times;
+            </button>
+        </div>
+    </div>
+    <div class="chat-body" id="chatBody">
+        </div>
+    <div class="chat-input-row">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Напишите: «Хочу подтянуть...»" />
+        <button class="send-btn" id="sendBtn">Отправить</button>
+    </div>
+</div>
+
 <script>
     function toggleList(button) {
         const allLists = document.querySelectorAll('.topic-list');
@@ -416,19 +445,19 @@
         return addMessage('bot', `<span class="typing"><span></span><span></span><span></span></span>`);
     }
 
-    const QUICK = ['Пунктуация', 'Лексика', 'Экология', 'Экономика', 'Культура', 'Этика'];
+    const QUICK = ['Орфография', 'Пунктуация', 'Лексика', 'Синтаксис', 'Морфология', 'Цитирование', 'Обособленные члены'];
     function chips() {
         return `<div class="chips">${QUICK.map(q => `<button class="chip" data-chip="${q}">${q}</button>`).join('')}</div>`;
     }
 
     function greet() {
-        addMessage('bot', `Привет! Я подскажу, что повторить. Например, напишите: «Хочу подтянуть расстановку запятых в предложении». Или выберите подсказку ниже: ${chips()}`);
+        addMessage('bot', `Привет! Я подскажу, что повторить. Например: "Хочу подтянуть запятые" или "Экономическое образование". Либо выбери подсказку: ${chips()}`);
     }
 
     bodyEl.addEventListener('click', e => {
         const c = e.target.closest('[data-chip]');
         if (!c) return;
-        inputEl.value = `Хочу подтянуть ${c.getAttribute('data-chip')}`;
+        inputEl.value = `Хочу подтянуть ${c.getAttribute('data-chip').toLowerCase()}`;
         handleSend();
     });
 
@@ -451,21 +480,21 @@
         const q = query.toLowerCase();
         let score = new Map();
 
-        // Keywords mapping for broader search
         const KEYWORDS = {
             'орфограф': ['правопис', 'гласн', 'приставк', 'суффикс'],
             'пунктуац': ['знаки', 'запят', 'тире', 'кавыч', 'обособлен', 'сложноподчин', 'сложносочин', 'цитирован'],
-            'лексик': ['значение', 'синоним', 'антоним', 'термин', 'стиль'],
+            'лексик': ['значение', 'синоним', 'антоним', 'термин', 'стиль', 'публицистический'],
             'морфолог': ['части речи', 'склонен', 'спряжен'],
-            'синтакс': ['предложение', 'словосочетан', 'члены предложен'],
+            'синтакс': ['предложение', 'словосочетан', 'члены предложен', 'синтаксис', 'структура'],
             'культура': ['диалог культур', 'толерант', 'общество'],
-            'экология': ['природа', 'окружающ', 'загрязнен', 'защит'],
+            'естественные науки': ['физик', 'природ', 'открытия', 'учёные'],
+            'технологии': ['цифров', 'технолог', 'казахстан', 'искусствен'],
+            'биотехнологии': ['биотехнологии', 'этик', 'направлени', 'профессии'],
+            'энергетик': ['энергетик', 'проблем'],
+            'экология': ['природ', 'окружающ', 'загрязнен', 'защит'],
+            'молодёжь': ['поколение', 'саморазвит', 'профессия', 'речевая культура'],
             'экономика': ['цифров', 'умный дом', 'бизнес'],
-            'молодежь': ['поколение', 'саморазвит', 'профессия'],
-            'технологии': ['цифров', 'технолог', 'искусствен'],
-            'наука': ['этика', 'открытия', 'термины'],
-            'энергетика': ['энергетик', 'проблем'],
-            'дружба народов': ['диалог культур', 'толерант']
+            'этика и наука': ['этик', 'наук', 'общенаучная лексика', 'клонирован', 'киборг']
         };
 
         function bump(item, by) {
@@ -474,25 +503,20 @@
 
         for (const t of all) {
             const title = t.title.toLowerCase();
+            const section = t.section.toLowerCase();
 
-            // Direct title match
             if (title.includes(q)) {
                 bump(t, 5);
             }
 
-            // Keyword matching
             for (const mainKey in KEYWORDS) {
-                if (q.includes(mainKey) || KEYWORDS[mainKey].some(tag => q.includes(tag))) {
-                    if (title.includes(mainKey) || KEYWORDS[mainKey].some(tag => title.includes(tag))) {
-                        bump(t, 3);
-                    }
+                const keywords = KEYWORDS[mainKey];
+                const hasQueryKeyword = q.includes(mainKey) || keywords.some(tag => q.includes(tag));
+                const hasTopicKeyword = title.includes(mainKey) || keywords.some(tag => title.includes(tag)) || section.includes(mainKey);
+                
+                if (hasQueryKeyword && hasTopicKeyword) {
+                    bump(t, 3);
                 }
-            }
-
-            // Section matching
-            const section = t.section.toLowerCase();
-            if (section.includes(q) || q.includes(section)) {
-                bump(t, 2);
             }
         }
         
@@ -521,7 +545,7 @@
                 html = 'К сожалению, я не нашел подходящих тем по вашему запросу. Попробуйте сформулировать его иначе.';
             }
             addMessage('bot', html);
-        }, 1000); // Simulate network delay
+        }, 1000);
     }
 
     function escapeHtml(str) {
@@ -541,6 +565,9 @@
             handleSend();
         }
     });
+
+    // Инициализация при загрузке
+    greet();
 </script>
 
 </body>
