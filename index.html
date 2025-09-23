@@ -415,7 +415,7 @@
   </div>
   <div class="chat-body" id="chatBody"></div>
   <div class="chat-input-row">
-    <input id="chatInput" class="chat-input" type="text" placeholder="Напишите: «Хочу подтянуть запятые…»" />
+    <input id="chatInput" class="chat-input" type="text" placeholder="Напишите: «Хочу подтянуть правильную расстановку запятых…»" />
     <button id="sendBtn" class="send-btn">Отправить</button>
   </div>
 </aside>
@@ -440,7 +440,7 @@
   function addMessage(role, html){ const msg=document.createElement('div'); msg.className=`message ${role}`; msg.innerHTML=html; bodyEl.appendChild(msg); bodyEl.scrollTop=bodyEl.scrollHeight; return msg; }
   function addTyping(){ return addMessage('bot', `<span class="typing"><span></span><span></span><span></span></span>`); }
 
-  const QUICK = ['Орфография','Пунктуация','Лексика','Синтаксис','Морфология','Цитирование','Обособленные члены'];
+  const QUICK = ['Пунктуация','Лексика','Синтаксис','Морфология','Обособленные члены'];
   function chips(){ return `<div class="chips">${QUICK.map(q=>`<button class="chip" data-chip="${q}">${q}</button>`).join('')}</div>`; }
   function greet(){ addMessage('bot', `Привет! Я подскажу, что повторить. Например: «Хочу подтянуть запятые» или «Экономическое образование». Либо выбери подсказку: ${chips()}`); }
   bodyEl.addEventListener('click', e=>{ const c=e.target.closest('[data-chip]'); if(!c) return; inputEl.value=`Хочу подтянуть ${c.getAttribute('data-chip')}`; handleSend(); });
