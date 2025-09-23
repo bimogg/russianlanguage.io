@@ -445,7 +445,6 @@
  function greet(){ 
   addMessage('bot', `Привет! Я подскажу, что повторить. Например: «Хочу подтянуть правильное расставление знаков препинания» или «Экономическое образование». Либо выбери подсказку: ${chips()}`); 
 }
-``` ✅
 
   bodyEl.addEventListener('click', e=>{ const c=e.target.closest('[data-chip]'); if(!c) return; inputEl.value=`Хочу подтянуть ${c.getAttribute('data-chip')}`; handleSend(); });
 
