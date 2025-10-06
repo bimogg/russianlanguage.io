@@ -169,28 +169,188 @@
   </style>
 </head>
 <body>
+  <header>
+    <div class="logo">
+      <img src="aitu-logo-3.png" alt="Логотип" style="height: 90px; width: 150px;" />
+    </div>
+  </header>
 
-<header>
-  <div class="logo">
-    <img src="aitu-logo-3.png" alt="Логотип" style="height: 90px; width: 150px;" />
-  </div>
-</header>
 
-<section class="about-project">
-  <div class="about-container">
-    <h2>О проекте</h2>
-    <p>
-      Этот образовательный сайт создан специально для студентов, чтобы сделать изучение русского языка более доступным, интересным и эффективным. Здесь вы найдете основные темы курса, удобно сгруппированные и представленные в интерактивной форме.
-
-      Каждая тема сопровождается пояснительными материалами, которые помогут вам лучше понять содержание. Для удобства восприятия вы можете прослушивать аудиофайлы, а также смотреть обучающие видео, которые раскрывают сложные моменты наглядно и доступно.
-
-      В конце отдельных тем предусмотрены небольшие тесты, с помощью которых вы сможете проверить свои знания и закрепить изученный материал.
-
-      Этот проект призван сделать обучение не только полезным, но и увлекательным. Учитесь в удобном темпе, в любое время и в любом месте!
+  <section class="about-project">
+    <div class="about-container">
+      <h2>О проекте</h2>
+        <p style="font-size: 1.2rem; color: #7c7a72; line-height: 1.6;">
+      Добро пожаловать в наш проект! Здесь вы найдете полезные материалы, аудио и другие ресурсы, которые помогут вам в обучении. Мы стремимся сделать ваш опыт максимально удобным и интересным.
     </p>
+    </div>
+<!-- ==== AUDIO WIDGET (копи-паст в proect.html) ==== -->
+<section id="proj-audio-card" style="
+  background:#f5f0e9; 
+  padding:30px; 
+  border-radius:20px; 
+  max-width:420px; 
+  margin:40px auto; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  text-align:center; 
+  color:#5a4d3a;
+  box-shadow: 0 8px 20px rgba(90, 77, 58, 0.1);
+">
+  <!-- Положи свой файл рядом со страницей и поправь путь при необходимости -->
+  <audio id="proj-audio-player" src="W.opus"></audio>
+
+  <button id="proj-start-btn" style="
+    font-size:20px; 
+    padding:16px 44px; 
+    border:none; 
+    border-radius:35px; 
+    background:#d8c6aa; 
+    color:#5a4d3a; 
+    cursor:pointer; 
+    box-shadow: 0 5px 15px rgba(216, 198, 170, 0.6);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    margin-bottom: 26px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display:inline-flex; align-items:center; gap:10px;
+  ">
+    <span>▶️</span> <span>Прослушайте текст</span>
+  </button>
+
+  <div style="display:flex; justify-content:center; gap:20px;">
+    <!-- Пауза -->
+    <button id="proj-btn-pause" style="
+      width:46px;height:46px; 
+      border:none;border-radius:999px;
+      background:#c7b897;color:#453d2f;
+      cursor:pointer; 
+      box-shadow: 0 4px 12px rgba(199, 184, 151, 0.5);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      font-size:18px; font-weight:700;
+    ">▶️</button>
+
+    <!-- Пуск -->
+    <button id="proj-btn-play" style="
+      width:46px;height:46px; 
+      border:none;border-radius:999px;
+      background:#c7b897;color:#453d2f;
+      cursor:pointer; 
+      box-shadow: 0 4px 12px rgba(199, 184, 151, 0.5);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      font-size:18px; font-weight:700;
+    ">⏸</button>
+
+    <!-- Сброс -->
+    <button id="proj-btn-reset" style="
+      width:46px;height:46px; 
+      border:none;border-radius:999px;
+      background:#c7b897;color:#453d2f;
+      cursor:pointer; 
+      box-shadow: 0 4px 12px rgba(199, 184, 151, 0.5);
+      transition: transform 0.2s ease, background-color 0.2s ease;
+      font-size:18px; font-weight:700;
+    ">🔄</button>
   </div>
-  <button onclick="location.href='index.html'" class="back-button">← Вернуться в главное меню</button>
 </section>
 
+<script>
+/* --- защитно объявляем класс только если его ещё нет --- */
+(function(){
+if (!window.AudioController) {
+  class AudioController {
+    constructor(elOrSelector, opts = {}) {
+      this.audio = typeof elOrSelector === 'string'
+        ? document.querySelector(elOrSelector)
+        : elOrSelector;
+      if (!this.audio) {
+        this.audio = document.createElement('audio');
+        this.audio.style.display = 'none';
+        document.body.appendChild(this.audio);
+      }
+      const {
+        src = null, preload = 'metadata', autoplay = false,
+        loop = false, volume = 1, rate = 1
+      } = opts;
+      this.audio.preload = preload;
+      this.audio.loop = loop;
+      this.audio.volume = clamp01(volume);
+      this.audio.playbackRate = rate;
+      if (src) this.audio.src = src;
+      if (autoplay) this.play();
+      this._fadeId = 0;
+      this.on('error', () => {
+        const e = this.audio.error;
+        if (!e) return;
+        const map = {1:'ABORTED',2:'NETWORK',3:'DECODE',4:'SRC_NOT_SUPPORTED'};
+        console.error('[AudioController]', map[e.code] || 'UNKNOWN', e);
+      });
+    }
+    async play(){ try{ const p=this.audio.play(); if(p&&p.then) await p; }catch(e){ console.warn('play blocked'); } }
+    pause(){ this.audio.pause(); }
+    stop(){ this.audio.pause(); this.audio.currentTime=0; }
+    toggle(){ this.audio.paused ? this.play() : this.pause(); }
+    load(src){ if(src) this.audio.src=src; this.audio.load(); }
+    setTime(s){ this.audio.currentTime=Math.max(0, Number(s)||0); }
+    skip(d){ this.setTime(this.audio.currentTime+(Number(d)||0)); }
+    setVolume(v){ this.audio.volume=clamp01(v); }
+    mute(on=true){ this.audio.muted=!!on; }
+    loop(on=true){ this.audio.loop=!!on; }
+    setRate(r=1){ this.audio.playbackRate=Math.max(0.25, Math.min(4, Number(r)||1)); }
+    fadeTo(target=1, ms=500){
+      target=clamp01(target); ms=Math.max(0, Number(ms)||0);
+      this._fadeId++; const id=this._fadeId;
+      const start=performance.now(), from=this.audio.volume;
+      const tick=(t)=>{ if(id!==this._fadeId) return;
+        const k=ms===0?1:Math.min(1,(t-start)/ms);
+        this.audio.volume=from+(target-from)*k;
+        if(k<1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+    on(e,h){ this.audio.addEventListener(e,h); }
+    off(e,h){ this.audio.removeEventListener(e,h); }
+  }
+  function clamp01(x){ x=Number(x)||0; return Math.max(0, Math.min(1, x)); }
+  window.AudioController = AudioController;
+}
+
+/* --- инициализация именно для блока на proect.html --- */
+document.addEventListener('DOMContentLoaded', () => {
+  const player = new AudioController('#proj-audio-player', { preload: 'auto' });
+
+  const start = document.getElementById('proj-start-btn');
+  const btnPause = document.getElementById('proj-btn-pause');
+  const btnPlay  = document.getElementById('proj-btn-play');
+  const btnReset = document.getElementById('proj-btn-reset');
+
+  if (start)   start.addEventListener('click', () => player.play());
+  if (btnPlay) btnPlay.addEventListener('click',  () => player.play());
+  if (btnPause)btnPause.addEventListener('click', () => player.pause());
+  if (btnReset)btnReset.addEventListener('click', async () => { player.stop(); await player.play(); });
+
+  // лёгкий hover-эффект
+  [start, btnPlay, btnPause, btnReset].forEach((b)=>{
+    if(!b) return;
+    b.addEventListener('mouseenter', ()=> b.style.transform='scale(1.05)');
+    b.addEventListener('mouseleave', ()=> b.style.transform='scale(1)');
+  });
+
+  // хоткеи: пробел, стрелочки, M
+  document.addEventListener('keydown', (e)=>{
+    if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (e.code==='Space'){ e.preventDefault(); player.toggle(); }
+    if (e.code==='ArrowRight') player.skip(5);
+    if (e.code==='ArrowLeft')  player.skip(-5);
+    if (e.key && e.key.toLowerCase()==='m') player.mute(!player.audio.muted);
+  });
+});
+})();
+</script>
+<!-- ==== /AUDIO WIDGET ==== -->
+
+  </script>
+    <section class="about-project">
+   
+      <button onclick="location.href='index.html'" class="back-button">← Вернуться в главное меню</button>
+    </section>
 </body>
 </html>
